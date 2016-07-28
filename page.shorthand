@@ -9,7 +9,6 @@
 <header>
 <a href="/"><img src="/assets/orangebooks-logo.png" alt="Caltech Library logo"></a>
 <h1>Caltech Library</h1>
-<h2>{{pageTitle}}</h2>
 </header>
 <nav>
 {{navContent}}
