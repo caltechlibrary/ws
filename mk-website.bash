@@ -16,5 +16,5 @@ function makePage () {
 makePage README.md nav.md index.html
 
 # install.html (slide presentation)
-makePage INSTALL.md nav.md install.html
+makePage INSTALL.md nav.md installation.html
 

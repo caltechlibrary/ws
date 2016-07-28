@@ -1,26 +1,31 @@
-@header :!: blackfriday-tool text/header.md
-@nav :!: blackfriday-tool text/nav.md
-@content :!: blackfriday-tool README.md
-@footer :!: blackfriday-tool text/footer.md
 <!DOCTYPE html>
 <html>
-    <head>
-          <title>ws: A light weight webserver for static content development.</title>
-          <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.5.0/pure-min.css">
-          <link rel="stylesheet" href="doc/css/style.css">
-    </head>
-    <body>
-        <header>
-        @header
-        </header>
-        <section>
-        @content
-        </section>
-        <nav>
-        @nav
-        </nav>
-        <footer>
-        @footer
-        </footer>
-    </body>
+<head>
+    <title>Caltech Library's Digital Library Development Sandbox</title>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header>
+<a href="/"><img src="/assets/orangebooks-logo.png" alt="Caltech Library logo"></a>
+<h1>Caltech Library</h1>
+<h2>{{pageTitle}}</h2>
+</header>
+<nav>
+{{navContent}}
+</nav>
+
+<section>
+{{pageContent}}
+</section>
+
+<footer>
+<span><h1><A href="http://caltech.edu">Caltech</a></h1></span>
+<span>&copy; 2015 <a href="http://library.caltech.edu/CLS_Copyright.htm">Caltech library</a></span>
+<address>1200 E California Blvd, Mail Code 1-32, Pasadena, CA 91125-3200</address> 
+<span>Phone: <a href="tel:+1-626-395-3405">(626)395-3405</a></span>
+<span><a href="mailto:library@caltech.edu">Email Us</a></span>
+<a class="cl-hide" href="sitemap.xml">Site Map</a>
+</footer>
+</body>
 </html>
