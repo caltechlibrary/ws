@@ -1,9 +1,10 @@
 //
 // ws.go - A simple web server for static files and limit server side JavaScript
-// @author R. S. Doiel, <rsdoiel@gmail.com>
 //
-// Copyright (c) 2014 - 2016, R. S. Doiel
-// All rights not granted herein are expressly reserved by R. S. Doiel.
+// @author R. S. Doiel, <rsdoiel@caltech.edu>
+//
+// Copyright (c) 2016, Caltech
+// All rights not granted herein are expressly reserved by Caltech
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
@@ -27,7 +28,7 @@ import (
 	"strconv"
 
 	// Local package
-	"github.com/rsdoiel/ws"
+	"github.com/caltechlibrary/ws"
 )
 
 // Flag options

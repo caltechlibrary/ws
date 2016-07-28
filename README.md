@@ -1,7 +1,4 @@
 
-[![Go Report Card](http://goreportcard.com/badge/rsdoiel/ws)](http://goreportcard.com/report/rsdoiel/ws)
-[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-
 # ws
 
 ## A nimble web server
@@ -31,12 +28,9 @@ Here's my basic approach to get things setup. I assume you've got *Golang* alrea
     + Restricted file service, only from the docroot and no "dot files" are served
     + No dynamic content support 
     + Quick startup, everything logged to console for easy debugging or piping to a log processor
-+ [ws js support](README.md) a nimple webserver for static and JavaScript generated dynamic content
-    + built on Robert Krimen's excellent [otto](https://github.com/robertkrimen/otto) JavaScript VM
-    + Mockup your dynamic content via JavaScript defined routes (great for creating JSON blobs used by a browser side demo)
 
 ```
-  git clone https://github.com/rsdoiel/ws
+  git clone https://github.com/caltechlibrary/ws
   cd ws
   go get -u github.com/robertkrimen/otto
   go test
@@ -53,24 +47,15 @@ If everything compiles fine then I do something like this--
 
 ### _ws_ features
 
-+ http/https protocols
++ http/https protocols (including http2 support if using current Go packages)
 + static file server
 + a simplified server side JavaScript platform
   + if you need more, check out [NodeJS](http://nodejs.org)
 + a project setup option called *init*
 
-*_ws_ init* takes three actions
-
-+ create a basic site directory structure (e.g. htdocs, jsdocs, etc) if needed
-+ creates self signed SSL certificates (e.g. etc/site.key, etc/site.pem) if appropriate
-+ suggests environment variable settings (e.g like you might put in etc/setup.conf)
-
-
 ## Configuration
 
-Configuration for _ws_  can be passed directly from environment
-variables. That makes them container friendly.  The environment can be
-overwritten by command line options.
+You can configure _ws_ in the command line or with environment variables
 
 The standard set of environment variables are
 
@@ -132,7 +117,7 @@ JavaScript development--
 + os related
   + WS.getEnv(varname) which will read an environment variable
 
-Want to expand out the site quickly, write the HTML skeleton with markdown, sprinkle in some [shorthand](http://rsdoiel.github.io/shorthand) which can leverage some shell logic and now you have HTML pages with common nav, headers, and footers.
+Want to expand out the site quickly, write the HTML skeleton with markdown, sprinkle in some [shorthand](http://caltechlibrary.github.io/shorthand) which can leverage some shell logic and now you have HTML pages with common nav, headers, and footers.
 
 
 ## Installation
@@ -140,11 +125,10 @@ Want to expand out the site quickly, write the HTML skeleton with markdown, spri
 _ws_ can be installed with the *go get* command.
 
 ```
-    go get github.com/rsdoiel/ws/...
+    go get github.com/caltechlibrary/ws/...
 ```
 
 ## LICENSE
 
-copyright (c) 2014 - 2016, R. S. Doiel
-All rights reserved.
-Released under the [BSD 3 Clause License](http://opensource.org/licenses/BSD-3-Clause)
+copyright (c) 2016 Caltech
+See [LICENSE](LICENSE) for details

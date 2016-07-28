@@ -22,5 +22,12 @@ test:
 	go test
 	gocyclo -over 15 .
 
+website:
+	./mk-website.bash
+
+publish:
+	./mk-website.bash
+	./publish.bash
+
 release:
-	./mk-release.sh
+	./mk-release.bash

@@ -1,9 +1,10 @@
 //
-// Package ws provides the core library used by cmds/ws/ws.go, cmds/wsinit/wsinit.go and
-// cmds/wsindexer/wsindexer.go
+// Package ws provides the core library used by cmds/ws/ws.go
 //
-// Copyright (c) 2014 - 2016, R. S. Doiel
-// All rights not granted herein are expressly reserved by R. S. Doiel.
+// @author R. S. Doiel, <rsdoiel@caltech.edu>
+//
+// Copyright (c) 2016, Caltech
+// All rights not granted herein are expressly reserved by Caltech
 //
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 //
