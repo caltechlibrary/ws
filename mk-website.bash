@@ -1,20 +1,34 @@
 #!/bin/bash
-#
 
-function makePage () {
-    page=$1
-    nav=$2
-    html_page=$3
-    echo "Generating $html_page"
-    shorthand \
-        -e "{{content}} :import-markdown: $page" \
-        -e "{{nav}} :import-markdown: $nav" \
-        page.shorthand > $html_page
+function checkApp() {
+    APP_NAME=$1
+    if [ "$APP_NAME" = "" ]; then
+        echo "Missing $APP_NAME"
+        exit 1
+    fi
 }
 
-# index.html
-makePage README.md nav.md index.html
+function softwareCheck() {
+    for APP_NAME in shorthand; do
+        checkApp $APP_NAME
+    done
+}
 
-# install.html (slide presentation)
-makePage INSTALL.md nav.md installation.html
+function mkPage () {
+    nav="$1"
+    content="$2"
+    html="$3"
 
+    echo "Rendering $html from $content and $nav"
+    shorthand \
+        -e "{{navContent}} :import-markdown: $nav" \
+        -e "{{pageContent}} :import-markdown: $content" \
+        page.shorthand > $html
+}
+
+echo "Checking necessary software is installed"
+softwareCheck
+echo "Generating website index.html with shorthand"
+mkPage nav.md README.md index.html
+echo "Generating install.html with shorthand"
+mkPage nav.md INSTALL.md installation.html
