@@ -9,7 +9,7 @@ function checkApp() {
 }
 
 function softwareCheck() {
-    for APP_NAME in shorthand; do
+    for APP_NAME in mkpage; do
         checkApp $APP_NAME
     done
 }
@@ -19,16 +19,18 @@ function mkPage () {
     content="$2"
     html="$3"
 
-    echo "Rendering $html from $content and $nav"
-    shorthand \
-        -e "{{navContent}} :import-markdown: $nav" \
-        -e "{{pageContent}} :import-markdown: $content" \
-        page.shorthand > $html
+    echo "Rendering $html"
+    mkpage \
+        "nav=$nav" \
+        "content=$content" \
+        page.tmpl > $html
 }
 
 echo "Checking necessary software is installed"
 softwareCheck
-echo "Generating website index.html with shorthand"
+echo "Generating website index.html"
 mkPage nav.md README.md index.html
-echo "Generating install.html with shorthand"
+echo "Generating install.html"
 mkPage nav.md INSTALL.md installation.html
+echo "Generasting license.html"
+mkPage nav.md "markdown:$(cat LICENSE)" license.html

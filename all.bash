@@ -8,8 +8,8 @@ if [ "$GO" = "" ]; then
 fi
 # Install dependent libraries
 # Add from shorthand for generating website
-go get github.com/rsdoiel/shorthand
+go get github.com/rsdoiel/mkpage/...
 ## Used by ws js support
-go get github.com/caltechlibrary/otto
+go get github.com/caltechlibrary/otto/..
 make
 make test
