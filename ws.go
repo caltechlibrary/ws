@@ -42,7 +42,7 @@ import (
 )
 
 const (
-	// Version is used as a release number number for ws, wsinit, wsindexer
+	// Version is used as a release number for ws
 	Version = "0.0.7"
 )
 
