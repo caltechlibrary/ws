@@ -23,6 +23,11 @@ test:
 website:
 	./mk-website.bash
 
+save:
+	./mk-website.bash
+	git commit -am "Quick save"
+	git push origin master
+
 publish:
 	./mk-website.bash
 	./publish.bash
