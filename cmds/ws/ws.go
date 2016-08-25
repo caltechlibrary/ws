@@ -25,7 +25,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"strconv"
+	"strings"
 
 	// Local package
 	"github.com/caltechlibrary/ws"
@@ -33,16 +35,35 @@ import (
 
 // Flag options
 var (
-	help       bool
-	initialize bool
-	version    bool
-	uri        string
-	htdocs     string
-	jsdocs     string
-	sslkey     string
-	sslcert    string
-	cfg        *ws.Configuration
+	showHelp    bool
+	showVersion bool
+	showLicense bool
+	initialize  bool
+	uri         string
+	htdocs      string
+	jsdocs      string
+	sslkey      string
+	sslcert     string
+	cfg         *ws.Configuration
 )
+
+const license = `
+%s
+
+Copyright (c) 2016, Caltech
+All rights not granted herein are expressly reserved by Caltech.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+`
 
 func usage() {
 	fmt.Println(`
@@ -56,12 +77,21 @@ func usage() {
  for uses the https protocol (e.g. ws -url https://localhost:8443 init).
 
  OPTIONS
+
 `)
 	flag.VisitAll(func(f *flag.Flag) {
-		fmt.Printf("    -%s  (defaults to %s) %s\n", f.Name, f.DefValue, f.Usage)
+		if len(f.Name) > 1 {
+			switch f.Name {
+			case "htdocs":
+				fmt.Printf("    -%s, -%s\t%s\n", strings.ToUpper(f.Name[0:1]), f.Name, f.Usage)
+			default:
+				fmt.Printf("    -%s, -%s\t%s\n", f.Name[0:1], f.Name, f.Usage)
+			}
+		}
 	})
 
-	fmt.Println(`
+	fmt.Printf(`
+
  EXAMPLES
 
  Run a static web server using the content in the current directory
@@ -89,7 +119,21 @@ func usage() {
       -cert /etc/ssl/sites/mysite.crt \
       -htdocs $HOME/Sites \
       -jsdocs ./jsdocs
-`)
+
+ Saving the setup for later...
+
+   ws -url https://localhost:8443 \
+      -key /etc/ssl/sites/mysite.key \
+      -cert /etc/ssl/sites/mysite.crt \
+      -htdocs $HOME/Sites \
+      -jsdocs ./jsdocs \
+	  -init
+
+   . setup.bash
+   ws
+
+ Version: %s
+`, ws.Version)
 	os.Exit(0)
 }
 
@@ -110,15 +154,23 @@ func init() {
 		jsdocs = ""
 	}
 
-	flag.BoolVar(&help, "h", false, "Display this help message")
-	flag.BoolVar(&help, "help", false, "Display this help message")
-	flag.BoolVar(&version, "v", false, "Should version info")
-	flag.BoolVar(&version, "version", false, "Should version info")
+	flag.BoolVar(&showHelp, "h", false, "Display this help message")
+	flag.BoolVar(&showHelp, "help", false, "Display this help message")
+	flag.BoolVar(&showVersion, "v", false, "Should version info")
+	flag.BoolVar(&showVersion, "version", false, "Should version info")
+	flag.BoolVar(&showLicense, "l", false, "Show license info")
+	flag.BoolVar(&showLicense, "license", false, "Show license info")
+	flag.BoolVar(&initialize, "i", false, "Initialize a project")
 	flag.BoolVar(&initialize, "init", false, "Initialize a project")
+	flag.StringVar(&htdocs, "H", htdocs, "Set the htdocs path")
 	flag.StringVar(&htdocs, "htdocs", htdocs, "Set the htdocs path")
+	flag.StringVar(&jsdocs, "j", jsdocs, "Set the jsdocs path, turns on server side JavaScript support")
 	flag.StringVar(&jsdocs, "jsdocs", jsdocs, "Set the jsdocs path, turns on server side JavaScript support")
+	flag.StringVar(&uri, "u", uri, "The protocal and hostname listen for as a URL")
 	flag.StringVar(&uri, "url", uri, "The protocal and hostname listen for as a URL")
+	flag.StringVar(&sslkey, "k", sslkey, "Set the path for the SSL Key")
 	flag.StringVar(&sslkey, "key", sslkey, "Set the path for the SSL Key")
+	flag.StringVar(&sslcert, "c", sslcert, "Set the path for the SSL Cert")
 	flag.StringVar(&sslcert, "cert", sslcert, "Set the path for the SSL Cert")
 }
 
@@ -163,13 +215,18 @@ func makeJSHandler(route string, jsSource []byte) http.HandlerFunc {
 }
 
 func main() {
+	appName := path.Base(os.Args[0])
 	flag.Parse()
 
 	// Process flags and update the environment as needed.
-	if help == true {
+	if showHelp == true {
 		usage()
 	}
-	if version == true {
+	if showLicense == true {
+		fmt.Printf(license, appName)
+		os.Exit(0)
+	}
+	if showVersion == true {
 		fmt.Printf("ws version %s\n", ws.Version)
 		os.Exit(0)
 	}

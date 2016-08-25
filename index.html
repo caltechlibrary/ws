@@ -26,71 +26,30 @@
 
 <p><em>ws</em> is a prototyping platform for web based services and websites.</p>
 
-<p><em>ws</em> started as a nimble static content web server.  It now includes
-support for server side JavaScript and can initialize a basic project
-layout. The <em>init</em> option generates a project directory
-structure, creates self signed SSL keys and displays suggested environment
-variables for use with <em>ws</em>.  If the directory structure already exists it
-will display the suggest setup.</p>
-
-<h2>Requirements</h2>
+<h3><em>ws</em> has a minimal feature set</h3>
 
 <ul>
-<li><a href="http://golang.org">Golang</a> version 1.5.3 or better</li>
-<li>A 3rd Party Go package
+<li>A simple static file webserver
 
 <ul>
-<li><a href="https://github.com/robertkrimen/otto">Otto</a> by Robert Krimen, MIT license</li>
-<li>a JavaScript interpreter written in Go</li>
+<li>quick startup</li>
+<li>activity logged to the console</li>
+<li>supports http2 out of the box</li>
 </ul></li>
-</ul>
-
-<h2>Compile</h2>
-
-<p>Here&rsquo;s my basic approach to get things setup. I assume you&rsquo;ve got <em>Golang</em> already installed.</p>
-
-<ul>
-<li><a href="README.md">ws</a> a nimple webserver for static content
-
-<ul>
-<li>Built on Golangs native http/https modules</li>
-<li>Restricted file service, only from the docroot and no &ldquo;dot files&rdquo; are served</li>
-<li>No dynamic content support</li>
-<li>Quick startup, everything logged to console for easy debugging or piping to a log processor</li>
-</ul></li>
-</ul>
-
-<pre><code>  git clone https://github.com/caltechlibrary/ws
-  cd ws
-  go get -u github.com/robertkrimen/otto
-  go test
-  go build
-  go build cmds/ws/ws.go
-</code></pre>
-
-<p>If everything compiles fine then I do something like this&ndash;</p>
-
-<pre><code>  go install cmds/ws/ws.go
-</code></pre>
-
-<h3><em>ws</em> features</h3>
-
-<ul>
-<li>http/https protocols (including http2 support if using current Go packages)</li>
-<li>static file server</li>
-<li>a simplified server side JavaScript platform
+<li>A simple server side JavaScript runner for proxing remote JSON resources
 
 <ul>
 <li>if you need more, check out <a href="http://nodejs.org">NodeJS</a></li>
 </ul></li>
-<li>a project setup option called <em>init</em></li>
+<li>A project setup option called <em>init</em></li>
 </ul>
 
 <h2>Configuration</h2>
 
-<p>You can configure <em>ws</em> in the command line or with environment variables</p>
+<p>You can configure <em>ws</em> with command line options or environment variables.
+Try <code>ws -help</code> for a list of command line options.</p>
 
-<p>The standard set of environment variables are</p>
+<h3>Environment variables</h3>
 
 <ul>
 <li>WS_URL the URL to listen for by <em>ws</em>
@@ -120,7 +79,7 @@ will display the suggest setup.</p>
 </ul></li>
 </ul>
 
-<h3>command line options</h3>
+<h3>Command line options</h3>
 
 <ul>
 <li>-url overrides WS_URL</li>
@@ -128,16 +87,23 @@ will display the suggest setup.</p>
 <li>-jsdocs overrides WS_JSDOCS</li>
 <li>-ssl-key overrides WS_SSL_KEY</li>
 <li>-ssl-pem overrides WS_SSL_PEM</li>
-<li>-init triggers the initialization process</li>
-<li>-h, &ndash;help displays the help documentation</li>
-<li>-v, &ndash;version display the version of the command</li>
+<li>-init triggers the initialization process and creates a setup.bash file</li>
+<li>-h, -help displays the help documentation</li>
+<li>-v, -version display the version of the command</li>
+<li>-l, -license displays license information</li>
 </ul>
 
-<h2>A word about the Server Side JavaScript implementation</h2>
+<p>Running <em>ws</em> without environment variables or command line options is an easy way
+to server your current working directory&rsquo;s content out as <a href="http://localhost:8000">http://localhost:8000</a>.</p>
+
+<h2>The Server Side JavaScript implementation</h2>
+
+<p>The server side JavaScript support in <em>ws</em> is intended to make it easy to
+pull in JSON resources from the web for integration and testing with your
+static website content. It uses a JavaScript engine called <a href="https://github.com/robertkrimen/otto">otto</a>.</p>
 
 <p><a href="https://github.com/robertkrimen/otto">otto</a> is a JavaScript virtual machine
-written by Robert Krimen. It is the engine that powers <em>ws</em> server side
-JavaScript capabilities. Each JavaScript file in the <em>jsdocs</em> directory tree
+written by Robert Krimen. Each JavaScript file in the <em>jsdocs</em> directory tree
 becomes a URL end point or route. E.g. <em>jsdocs/example-1.js</em> becomes the
 route <em>/example-1</em>. <em>example-1</em>. Each of the server side JavaScript files
 should contain a closure accepting a &ldquo;Request&rdquo; and &ldquo;Response&rdquo; object as
@@ -154,8 +120,8 @@ parameters.  E.g.</p>
     }(Request, Response));
 </code></pre>
 
-<p>Assuming server side JavaScript is enabled then the page rendered should have a
-content type of &ldquo;text/html&rdquo; with the body should be holding the paragraph and
+<p>Assuming server side JavaScript is enabled then this end point would rendered
+with a content type of &ldquo;text/html&rdquo;. The body should be holding the paragraph and
 pre element.</p>
 
 <p>Some additional functions are provided to facilitate server side
@@ -175,13 +141,53 @@ JavaScript development&ndash;</p>
 </ul></li>
 </ul>
 
-<p>Want to expand out the site quickly, write the HTML skeleton with markdown, sprinkle in some <a href="http://caltechlibrary.github.io/shorthand">shorthand</a> which can leverage some shell logic and now you have HTML pages with common nav, headers, and footers.</p>
+<p>The server side JavaScripts cannot call other JavaScript files or modules. This
+was a deliberate design decission as <a href="https://nodejs.org">NodeJS</a> is a widely
+available server side JS environment with a large community and amply documented
+at this point in time.</p>
+
+<p>Need to quickly build out a website from Markdown files or other JSON resources?
+Take a look at <a href="https://caltechlibrary.github.io/mkpage">mkpage</a>.</p>
 
 <h2>Installation</h2>
 
-<p><em>ws</em> can be installed with the <em>go get</em> command.</p>
+<p><em>ws</em> is available as precompile binaries for Linux, Mac OS X, and Windows 10 on Intel.
+Additional binaries are provided for Raspbian on ARM6 adn ARM7.  Follow the <a href="install.html">INSTALL.md</a>
+instructions to download and install the pre-compiled binaries.</p>
+
+<p>If you have Golang installed then <em>ws</em> can be installed with the <em>go get</em> command.</p>
 
 <pre><code>    go get github.com/caltechlibrary/ws/...
+</code></pre>
+
+<h2>Compiling from source</h2>
+
+<p>Required</p>
+
+<ul>
+<li><a href="http://golang.org">Golang</a> version 1.7 or better</li>
+<li>A 3rd Party Go package
+
+<ul>
+<li><a href="https://github.com/robertkrimen/otto">Otto</a> by Robert Krimen, MIT license</li>
+<li>a JavaScript interpreter written in Go</li>
+<li>&ldquo;go gettable&rdquo; with <code>go get github.com/robertkrimen/otto/...</code></li>
+</ul></li>
+</ul>
+
+<p>Here&rsquo;s my basic approach to get things setup. Go 1.7 needs to be already installed.</p>
+
+<pre><code>  git clone https://github.com/caltechlibrary/ws
+  cd ws
+  go get -u github.com/robertkrimen/otto
+  go test
+  go build
+  go build cmds/ws/ws.go
+</code></pre>
+
+<p>If everything compiles fine then I do something like this&ndash;</p>
+
+<pre><code>  go install cmds/ws/ws.go
 </code></pre>
 
 <h2>LICENSE</h2>

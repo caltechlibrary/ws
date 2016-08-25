@@ -1,18 +1,17 @@
 #
 # Biuld the project.
 #
-build: bin/ws
-
-bin/ws: cmds/ws/ws.go ws.go
-	go build -o bin/ws cmds/ws/ws.go
+build:
+	env CGO_ENABLE=0 go build -o bin/ws cmds/ws/ws.go
 
 lint:
 	gofmt -w ws.go && golint ws.go
 	gofmt -w cmds/ws/ws.go && golint cmds/ws/ws.go
+	gocyclo -over 20 .
 
 install: bin/ws ws.go
-	env GOBIN=$(HOME)/bin go install
-	env GOBIN=$(HOME)/bin go install cmds/ws/ws.go
+	env CGO_ENABLED=0 GOBIN=$(HOME)/bin go install
+	env CGO_ENABLED=0 GOBIN=$(HOME)/bin go install cmds/ws/ws.go
 
 clean: 
 	if [ -d bin ]; then rm -fR bin; fi
@@ -20,7 +19,6 @@ clean:
 
 test:
 	go test
-	gocyclo -over 15 .
 
 website:
 	./mk-website.bash
