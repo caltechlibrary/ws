@@ -141,5 +141,5 @@ If everything compiles fine then I do something like this--
 ## LICENSE
 
 copyright (c) 2016 Caltech
-See [LICENSE](LICENSE) for details
+See [LICENSE](license.html) for details
 
