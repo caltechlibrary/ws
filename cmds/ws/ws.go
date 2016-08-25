@@ -69,7 +69,7 @@ func usage() {
 
    ws
 
- Setup a SSL base site saving the configuration in setup.conf.
+ Setup a SSL base site saving the configuration in setup.bash.
 
    ws -url https://localhost:8443 -init
    . setup.bash
