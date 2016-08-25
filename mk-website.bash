@@ -31,6 +31,6 @@ softwareCheck
 echo "Generating website index.html"
 mkPage nav.md README.md index.html
 echo "Generating install.html"
-mkPage nav.md INSTALL.md installation.html
+mkPage nav.md INSTALL.md install.html
 echo "Generasting license.html"
 mkPage nav.md "markdown:$(cat LICENSE)" license.html
