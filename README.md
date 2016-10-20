@@ -34,7 +34,6 @@ Try `ws -help` for a list of command line options.
 
 + -url overrides WS_URL
 + -htdocs overrides WS_HTDOCS
-+ -jsdocs overrides WS_JSDOCS
 + -ssl-key overrides WS_SSL_KEY
 + -ssl-pem overrides WS_SSL_PEM
 + -init triggers the initialization process and creates a setup.bash file
