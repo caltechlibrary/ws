@@ -26,7 +26,6 @@ import (
 	"net/http"
 	"os"
 	"path"
-	"strconv"
 	"strings"
 
 	// Local package
@@ -41,7 +40,6 @@ var (
 	initialize  bool
 	uri         string
 	htdocs      string
-	jsdocs      string
 	sslkey      string
 	sslcert     string
 	cfg         *ws.Configuration
@@ -67,7 +65,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 func usage() {
 	fmt.Println(`
- USAGE: ws [OPTIONS]
+ USAGE: ws [OPTIONS] [HTDOCS]
 
  OVERVIEW
 
@@ -95,7 +93,7 @@ func usage() {
  EXAMPLES
 
  Run a static web server using the content in the current directory
- (assumes the environment variables WS_HTDOCS and WS_JSDOCS are not defined).
+ (assumes the environment variables WS_HTDOCS is not defined).
 
    ws
 
@@ -111,22 +109,12 @@ func usage() {
    . setup.bash
    ws
 
- Turn on JavaScript server side support by providing a path for WS_JSDOCS
- and another location for WS_HTDOCS using local machine certs.
-
-   ws -url https://localhost:8443 \
-      -key /etc/ssl/sites/mysite.key \
-      -cert /etc/ssl/sites/mysite.crt \
-      -htdocs $HOME/Sites \
-      -jsdocs ./jsdocs
-
  Saving the setup for later...
 
    ws -url https://localhost:8443 \
       -key /etc/ssl/sites/mysite.key \
       -cert /etc/ssl/sites/mysite.crt \
       -htdocs $HOME/Sites \
-      -jsdocs ./jsdocs \
 	  -init
 
    . setup.bash
@@ -144,15 +132,9 @@ func init() {
 	if uri == "" {
 		uri = "http://localhost:8000"
 	}
-	// If htdocs is NOT specified then turn off Server Side JavaScript support.
 	htdocs = cfg.HTDocs
-	jsdocs = cfg.JSDocs
 	sslkey = cfg.SSLKey
 	sslcert = cfg.SSLCert
-	if htdocs == "" {
-		htdocs = "."
-		jsdocs = ""
-	}
 
 	flag.BoolVar(&showHelp, "h", false, "Display this help message")
 	flag.BoolVar(&showHelp, "help", false, "Display this help message")
@@ -164,8 +146,6 @@ func init() {
 	flag.BoolVar(&initialize, "init", false, "Initialize a project")
 	flag.StringVar(&htdocs, "H", htdocs, "Set the htdocs path")
 	flag.StringVar(&htdocs, "htdocs", htdocs, "Set the htdocs path")
-	flag.StringVar(&jsdocs, "j", jsdocs, "Set the jsdocs path, turns on server side JavaScript support")
-	flag.StringVar(&jsdocs, "jsdocs", jsdocs, "Set the jsdocs path, turns on server side JavaScript support")
 	flag.StringVar(&uri, "u", uri, "The protocal and hostname listen for as a URL")
 	flag.StringVar(&uri, "url", uri, "The protocal and hostname listen for as a URL")
 	flag.StringVar(&sslkey, "k", sslkey, "Set the path for the SSL Key")
@@ -185,35 +165,6 @@ func logger(next http.Handler) http.Handler {
 	})
 }
 
-func makeJSHandler(route string, jsSource []byte) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		logRequest(r)
-		vm := ws.NewJSEngine(w, r)
-		_, err := vm.Eval(jsSource)
-		if err != nil {
-			log.Printf("JavaScript error %s, %s", route, err)
-			http.Error(w, "Internal Server Error", 500)
-			return
-		}
-		val, _ := vm.Get("Response")
-		res := new(ws.JSResponse)
-		err = ws.ToStruct(val, &res)
-		if err != nil {
-			log.Printf("Can't unpack response %s, %s", route, err)
-			http.Error(w, "Internal Server Error", 500)
-			return
-		}
-		statusCode, _ := strconv.Atoi(fmt.Sprintf("%d", res.Code))
-		w.Header().Set("Status-Code", fmt.Sprintf("%d %s", statusCode, http.StatusText(statusCode)))
-		for _, header := range res.Headers {
-			for k, v := range header {
-				w.Header().Set(k, v)
-			}
-		}
-		w.Write([]byte(res.Content))
-	}
-}
-
 func main() {
 	appName := path.Base(os.Args[0])
 	flag.Parse()
@@ -230,14 +181,15 @@ func main() {
 		fmt.Printf("ws version %s\n", ws.Version)
 		os.Exit(0)
 	}
+	args := flag.Args()
+	if len(args) > 0 {
+		htdocs = args[0]
+	}
 	if uri != "" {
 		os.Setenv("WS_URL", uri)
 	}
 	if htdocs != "" {
 		os.Setenv("WS_HTDOCS", htdocs)
-	}
-	if jsdocs != "" {
-		os.Setenv("WS_JSDOCS", jsdocs)
 	}
 	if sslkey != "" {
 		os.Setenv("WS_SSL_KEY", sslkey)
@@ -252,9 +204,6 @@ func main() {
 	if initialize == true {
 		if cfg.HTDocs == "" || cfg.HTDocs == "." {
 			cfg.HTDocs = "htdocs"
-		}
-		if cfg.JSDocs == "" {
-			cfg.JSDocs = "jsdocs"
 		}
 		if cfg.URL.Scheme == "https" {
 			if cfg.SSLKey == "" {
@@ -282,23 +231,6 @@ func main() {
 	err := cfg.Validate()
 	if err != nil {
 		log.Fatalf("Invalid configuration, %s", err)
-	}
-
-	if cfg.JSDocs != "" {
-		log.Printf("JSDocs %s", cfg.JSDocs)
-		jsSourceFiles, err := ws.ReadJSFiles(cfg.JSDocs)
-		if err != nil {
-			log.Fatalf("Could not read files in %s, %s", cfg.JSDocs, err)
-		}
-		for fname, jsSource := range jsSourceFiles {
-			route, err := ws.JSPathToRoute(fname, cfg)
-			if err != nil {
-				log.Fatalf("%s", err)
-			}
-			log.Printf("Adding route %s for %s", route, fname)
-			jsHandler := makeJSHandler(route, jsSource)
-			http.HandleFunc(route, jsHandler)
-		}
 	}
 
 	log.Printf("HTDocs %s", cfg.HTDocs)

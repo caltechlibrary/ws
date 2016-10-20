@@ -36,9 +36,6 @@ func TestConfigureFromEnv(t *testing.T) {
 	if cfg.HTDocs != "" {
 		t.Errorf("cfg.HTDocs should be empty, %s", cfg.HTDocs)
 	}
-	if cfg.JSDocs != "" {
-		t.Errorf("cfg.JSDocs should be empty, %s", cfg.JSDocs)
-	}
 	if cfg.SSLKey != "" {
 		t.Errorf("cfg.SSLKey should be empty, %s", cfg.SSLKey)
 	}
@@ -48,7 +45,6 @@ func TestConfigureFromEnv(t *testing.T) {
 
 	os.Setenv("WS_URL", "https://example.org:8001")
 	os.Setenv("WS_HTDOCS", "htdocs")
-	os.Setenv("WS_JSDOCS", "jsdocs")
 	os.Setenv("WS_SSL_KEY", "etc/ssl/site.key")
 	os.Setenv("WS_SSL_CERT", "etc/ssl/site.crt")
 	err := cfg.Getenv()
@@ -60,9 +56,6 @@ func TestConfigureFromEnv(t *testing.T) {
 	}
 	if cfg.HTDocs != "htdocs" {
 		t.Errorf("cfg.HTDocs != htdocs, %s", cfg.HTDocs)
-	}
-	if cfg.JSDocs != "jsdocs" {
-		t.Errorf("cfg.JSDocs != jsdocs, %s", cfg.JSDocs)
 	}
 	if cfg.SSLKey != "etc/ssl/site.key" {
 		t.Errorf("cfg.SSLKey != etc/ssl/site.key, %s", cfg.SSLKey)
@@ -79,14 +72,12 @@ func TestConfigureString(t *testing.T) {
 	yr, mn, dy := now.Date()
 	u := "https://example.org"
 	htdocs := "/www/htdocs"
-	jsdocs := "/www/jsdocs"
 	sslkey := "/etc/ssl/site.key"
 	sslcert := "/etc/ssl/site.crt"
 
 	// Set some example configuration
 	os.Setenv("WS_URL", u)
 	os.Setenv("WS_HTDOCS", htdocs)
-	os.Setenv("WS_JSDOCS", jsdocs)
 	os.Setenv("WS_SSL_KEY", sslkey)
 	os.Setenv("WS_SSL_CERT", sslcert)
 	cfg.Getenv()
@@ -95,10 +86,9 @@ func TestConfigureString(t *testing.T) {
 # generated %d-%02d-%02d by ws version %s
 export WS_URL=%q
 export WS_HTDOCS=%q
-export WS_JSDOCS=%q
 export WS_SSL_KEY=%q
 export WS_SSL_CERT=%q
-`, yr, mn, dy, Version, u, htdocs, jsdocs, sslkey, sslcert)
+`, yr, mn, dy, Version, u, htdocs, sslkey, sslcert)
 
 	s := cfg.String()
 	if strings.Compare(s, expected) != 0 {
@@ -113,13 +103,11 @@ func TestConfigureInitializeProject(t *testing.T) {
 	cfg := new(Configuration)
 	u := "https://testout.localhost:8001"
 	htdocs := "testout/https/htdocs"
-	jsdocs := "testout/https/jsdocs"
 	sslkey := "testout/https/etc/ssl/site.key"
 	sslcert := "testout/https/etc/ssl/site.crt"
 	// Set some example configuration
 	os.Setenv("WS_URL", u)
 	os.Setenv("WS_HTDOCS", htdocs)
-	os.Setenv("WS_JSDOCS", jsdocs)
 	os.Setenv("WS_SSL_KEY", sslkey)
 	os.Setenv("WS_SSL_CERT", sslcert)
 	cfg.Getenv()
@@ -134,7 +122,6 @@ func TestConfigureInitializeProject(t *testing.T) {
 	sslCertDir, _ := filepath.Split(cfg.SSLCert)
 	directories := []string{
 		cfg.HTDocs,
-		cfg.JSDocs,
 		sslKeyDir,
 		sslCertDir,
 	}
@@ -163,13 +150,11 @@ func TestConfigureInitializeProject(t *testing.T) {
 	cfg = new(Configuration)
 	u = "http://testout.localhost:8001"
 	htdocs = "testout/http/htdocs"
-	jsdocs = "testout/http/jsdocs"
 	sslkey = "testout/http/etc/ssl/site.key"
 	sslcert = "testout/http/etc/ssl/site.crt"
 	// Set some example configuration
 	os.Setenv("WS_URL", u)
 	os.Setenv("WS_HTDOCS", htdocs)
-	os.Setenv("WS_JSDOCS", jsdocs)
 	os.Setenv("WS_SSL_KEY", sslkey)
 	os.Setenv("WS_SSL_CERT", sslcert)
 	cfg.Getenv()
@@ -182,7 +167,6 @@ func TestConfigureInitializeProject(t *testing.T) {
 	// New check to see if the directory paths really exist or not...
 	directories = []string{
 		cfg.HTDocs,
-		cfg.JSDocs,
 	}
 	for _, directory := range directories {
 		if stat, err := os.Stat(directory); os.IsNotExist(err) || stat.IsDir() == false {
@@ -208,14 +192,12 @@ func TestConfigureValidate(t *testing.T) {
 	cfg := new(Configuration)
 	u := "https://example.org"
 	htdocs := "testout/www-01/htdocs"
-	jsdocs := "testout/www-01/jsdocs"
 	sslkey := "testout/www-01/ssl/site.key"
 	sslcert := "testout/www-01/ssl/site.crt"
 
 	// Set some example configuration
 	os.Setenv("WS_URL", u)
 	os.Setenv("WS_HTDOCS", htdocs)
-	os.Setenv("WS_JSDOCS", jsdocs)
 	os.Setenv("WS_SSL_KEY", sslkey)
 	os.Setenv("WS_SSL_CERT", sslcert)
 	cfg.Getenv()
@@ -227,12 +209,10 @@ func TestConfigureValidate(t *testing.T) {
 
 	u = "http://example.org"
 	htdocs = "testout/www-02/htdocs"
-	jsdocs = "testout/www-02/jsdocs"
 	sslkey = ""
 	sslcert = ""
 	os.Setenv("WS_URL", u)
 	os.Setenv("WS_HTDOCS", htdocs)
-	os.Setenv("WS_JSDOCS", jsdocs)
 	os.Setenv("WS_SSL_KEY", sslkey)
 	os.Setenv("WS_SSL_CERT", sslcert)
 	cfg.Getenv()
@@ -246,115 +226,6 @@ func TestConfigureValidate(t *testing.T) {
 	cfg.Getenv()
 	if err := cfg.Validate(); err == nil {
 		t.Errorf("https without ssl files, should have been invalid %+v, %s", cfg, err)
-	}
-
-	u = "http://example.org"
-	htdocs = "testout/www-02/htdocs"
-	jsdocs = "testout/www-02/htdocs/js"
-	sslkey = ""
-	sslcert = ""
-	os.Setenv("WS_URL", u)
-	os.Setenv("WS_HTDOCS", htdocs)
-	os.Setenv("WS_JSDOCS", jsdocs)
-	os.Setenv("WS_SSL_KEY", sslkey)
-	os.Setenv("WS_SSL_CERT", sslcert)
-	cfg.Getenv()
-	if err := cfg.Validate(); err == nil {
-		t.Errorf("jsdocs a child of htdocs, should have been invalid %+v, %s", cfg, err)
-	}
-}
-
-func TestReadJSFiles(t *testing.T) {
-	jsSources, err := ReadJSFiles("jsdocs")
-	if err != nil {
-		t.Errorf("reading jsdocs %s", err)
-	}
-	if len(jsSources) < 1 {
-		t.Error("should find more than one JavaScript file in jsdocs")
-	}
-	jsFilename := "jsdocs/helloworld.js"
-	jsSrc, ok := jsSources[jsFilename]
-	if ok == false {
-		t.Errorf("Should find %s in jsSources", jsFilename)
-	}
-	if jsSrc == nil {
-		t.Errorf("Should find source code for %s", jsFilename)
-	}
-}
-
-func TestJSEngine(t *testing.T) {
-	vm := NewJSEngine(nil, nil)
-	if vm == nil {
-		t.Errorf("should have created a new JavaScript VM")
-	}
-
-	val, err := vm.Eval(`
-    WS.getEnv != undefined
-  `)
-	b, err := val.ToBoolean()
-	if err != nil {
-		t.Errorf("Error from WS.getEnv != undefined, %s", err)
-	}
-	if b == false {
-		t.Errorf("Expected WS.getEnv != undefined to return true, %b", b)
-	}
-	val, err = vm.Eval(`
-    WS.httpGet != undefined
-  `)
-	b, err = val.ToBoolean()
-	if err != nil {
-		t.Errorf("Error from WS.httpGet != undefined, %s", err)
-	}
-	if b == false {
-		t.Errorf("Expected WS.httpGet != undefined to return true, %b", b)
-	}
-	val, err = vm.Eval(`
-    WS.httpPost != undefined
-  `)
-	b, err = val.ToBoolean()
-	if err != nil {
-		t.Errorf("Error from WS.httpPost != undefined, %s", err)
-	}
-	if b == false {
-		t.Errorf("Expected WS.httpPost != undefined to return true, %b", b)
-	}
-
-	err = os.Setenv("WS_TEST", "hello world")
-	val, err = vm.Eval(`
-    s = WS.getEnv("WS_TEST");
-    s;
-  `)
-	if err != nil {
-		t.Errorf(`vm.Eval() error, %s`, err)
-	}
-	s, err := val.Export()
-	if err != nil {
-		t.Errorf("Can't export 's' from JS eval, %s", err)
-	}
-	if s != "hello world" {
-		t.Errorf("Expected JS to return s of 'hello world', got %s", s)
-	}
-}
-
-func TestJSPathToRoute(t *testing.T) {
-	os.Setenv("WS_JSDOCS", "jsdocs")
-	cfg := new(Configuration)
-	cfg.Getenv()
-	p := "jsdocs/helloworld.js"
-	r, err := JSPathToRoute(p, cfg)
-	if err != nil {
-		t.Errorf("JSPathToRoute() error, %s", err)
-	}
-	if r != "/helloworld" {
-		t.Errorf("Failed converting path to route /helloworld, %s", r)
-	}
-	p = "jsdocs/api/search.js"
-	r, err = JSPathToRoute(p, cfg)
-	if err != nil {
-		t.Errorf("JSPathToRoute() error, %s", err)
-	}
-	if r != "/api/search" {
-		t.Errorf("Failed converting path to route /api/search, %s", r)
 	}
 }
 
