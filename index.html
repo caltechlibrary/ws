@@ -37,11 +37,6 @@
 <li>activity logged to the console</li>
 <li>supports http2 out of the box</li>
 </ul></li>
-<li>A simple server side JavaScript runner for proxing remote JSON resources
-
-<ul>
-<li>if you need more, check out <a href="http://nodejs.org">NodeJS</a></li>
-</ul></li>
 <li>A project setup option called <em>init</em></li>
 </ul>
 
@@ -62,11 +57,6 @@ Try <code>ws -help</code> for a list of command line options.</p>
 
 <ul>
 <li>the default is ./htdocs</li>
-</ul></li>
-<li>WS_JSDOCS the directory for any server side JavaScript processing
-
-<ul>
-<li>the default is ./jsdocs (if not found then server side JavaScript is turned off)</li>
 </ul></li>
 <li>WS_SSL_KEY the path the the SSL key file (e.g. etc/ssl/site.key)
 
@@ -97,56 +87,6 @@ Try <code>ws -help</code> for a list of command line options.</p>
 <p>Running <em>ws</em> without environment variables or command line options is an easy way
 to server your current working directory&rsquo;s content out as <a href="http://localhost:8000">http://localhost:8000</a>.</p>
 
-<h2>The Server Side JavaScript implementation</h2>
-
-<p>The server side JavaScript support in <em>ws</em> is intended to make it easy to
-pull in JSON resources from the web for integration and testing with your
-static website content. It uses a JavaScript engine called <a href="https://github.com/robertkrimen/otto">otto</a>.</p>
-
-<p><a href="https://github.com/robertkrimen/otto">otto</a> is a JavaScript virtual machine
-written by Robert Krimen. Each JavaScript file in the <em>jsdocs</em> directory tree
-becomes a URL end point or route. E.g. <em>jsdocs/example-1.js</em> becomes the
-route <em>/example-1</em>. <em>example-1</em>. Each of the server side JavaScript files
-should contain a closure accepting a &ldquo;Request&rdquo; and &ldquo;Response&rdquo; object as
-parameters.  E.g.</p>
-
-<pre><code class="language-JavaScript">    /* example-1.js - a simple example of Request and Response objects */
-    (function (req, res) {
-        var header = req.Header;
-
-        res.setHeader(&quot;content-type&quot;, &quot;text/html&quot;);
-        res.setContent(
-          &quot;&lt;p&gt;Here is the Header array received by this request&lt;/p&gt;&quot; +
-          &quot;&lt;pre&gt;&quot; + JSON.stringify(header) + &quot;&lt;/pre&gt;&quot;);
-    }(Request, Response));
-</code></pre>
-
-<p>Assuming server side JavaScript is enabled then this end point would rendered
-with a content type of &ldquo;text/html&rdquo;. The body should be holding the paragraph and
-pre element.</p>
-
-<p>Some additional functions are provided to facilitate server side
-JavaScript development&ndash;</p>
-
-<ul>
-<li>http related
-
-<ul>
-<li>WS.httpGet(url, array_of_headers) which performs a HTTP GET</li>
-<li>WS.httpPost(url, array_of_headers, payload) which performs an HTTP POST</li>
-</ul></li>
-<li>os related
-
-<ul>
-<li>WS.getEnv(varname) which will read an environment variable</li>
-</ul></li>
-</ul>
-
-<p>The server side JavaScripts cannot call other JavaScript files or modules. This
-was a deliberate design decission as <a href="https://nodejs.org">NodeJS</a> is a widely
-available server side JS environment with a large community and amply documented
-at this point in time.</p>
-
 <p>Need to quickly build out a website from Markdown files or other JSON resources?
 Take a look at <a href="https://caltechlibrary.github.io/mkpage">mkpage</a>.</p>
 
@@ -167,20 +107,12 @@ instructions to download and install the pre-compiled binaries.</p>
 
 <ul>
 <li><a href="http://golang.org">Golang</a> version 1.7 or better</li>
-<li>A 3rd Party Go package
-
-<ul>
-<li><a href="https://github.com/robertkrimen/otto">Otto</a> by Robert Krimen, MIT license</li>
-<li>a JavaScript interpreter written in Go</li>
-<li>&ldquo;go gettable&rdquo; with <code>go get github.com/robertkrimen/otto/...</code></li>
-</ul></li>
 </ul>
 
 <p>Here&rsquo;s my basic approach to get things setup. Go 1.7 needs to be already installed.</p>
 
 <pre><code>  git clone https://github.com/caltechlibrary/ws
   cd ws
-  go get -u github.com/robertkrimen/otto
   go test
   go build
   go build cmds/ws/ws.go
