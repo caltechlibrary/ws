@@ -1,15 +1,10 @@
 
 # Todo ideas
 
-+ decide if the extensions to Otto need to be  folded into my fork or left in _ws_
-
 ## Someday Maybe
 
 + Need to start adding the [Web API](https://developer.mozilla.org/en-US/docs/Web/API) that are appropraite to the server side environment
-+ add support to ws/js to handle JSON post as well as url encoded posts
 + add session and auth support
-+ ws/js improvements 
-    + add a built in DB object like SQLite or a JSON store for persistence between restarts
 + create wsedit for remote editing content of specific files over https connections.
     + look at CodeMirror and AceEditor as candidates for web browser editing
     + research best approach to embedding the editor in the go compiled binary
