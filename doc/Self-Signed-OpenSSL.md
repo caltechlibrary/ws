@@ -11,7 +11,7 @@ You can easily make you own self signed certificates for development purposes us
 	chmod 700 key.pem
 ```
 
-Make sure your key.pem file is protected. For _ws_ and _wsjs_ use command line options or environment variables to specify the certs.
+Make sure your key.pem file is protected. For _ws_ use command line options or environment variables to specify the certs.
 
 You can also use the _ws -init_ command, to generate a directory structure as well as SSL certs if the WS_URL environment variable starts with an https protocol.
 
