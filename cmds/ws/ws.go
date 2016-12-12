@@ -142,10 +142,10 @@ func main() {
 		docRoot = args[0]
 	}
 
-	docRoot = cli.CheckOption(docRoot, cfg.MergeEnv("docroot", docRoot), true)
+	docRoot = cfg.CheckOption(docRoot, cfg.MergeEnv("docroot", docRoot), true)
 	log.Printf("DocRoot %s", docRoot)
 
-	uri = cli.CheckOption(uri, cfg.MergeEnv("url", uri), true)
+	uri = cfg.CheckOption(uri, cfg.MergeEnv("url", uri), true)
 	u, err := url.Parse(uri)
 	if err != nil {
 		log.Fatalf("Can't parse %q, %s", uri, err)
@@ -153,8 +153,8 @@ func main() {
 
 	log.Printf("Listening for %s", uri)
 	if u.Scheme == "https" {
-		sslKey = cli.CheckOption(sslKey, cfg.MergeEnv("ssl_key", sslKey), true)
-		sslCert = cli.CheckOption(sslCert, cfg.MergeEnv("ssl_cert", sslCert), true)
+		sslKey = cfg.CheckOption(sslKey, cfg.MergeEnv("ssl_key", sslKey), true)
+		sslCert = cfg.CheckOption(sslCert, cfg.MergeEnv("ssl_cert", sslCert), true)
 		log.Printf("SSL Key %s", sslKey)
 		log.Printf("SSL Cert %s", sslCert)
 	}
