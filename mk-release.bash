@@ -11,4 +11,4 @@ for PROGNAME in ws; do
     env CGO_ENABLED=0 GOOS=linux   GOARCH=arm GOARM=7 go build -o dist/raspberrypi-arm7/$PROGNAME cmds/$PROGNAME/$PROGNAME.go
 done
 
-zip -r $RELEASE_NAME-binary-release.zip README.md LICENSE INSTALL.md dist/*
+zip -r $RELEASE_NAME-release.zip README.md LICENSE INSTALL.md dist/*
