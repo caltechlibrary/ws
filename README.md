@@ -23,7 +23,7 @@ Try `ws -help` for a list of command line options.
 
 + WS_URL the URL to listen for by _ws_
   + default is http://localhost:8000
-+ WS_HTDOCS the directory of your static content you need to serve
++ WS_DOCROOT the directory of your static content you need to serve
   + the default is ./htdocs
 + WS_SSL_KEY the path the the SSL key file (e.g. etc/ssl/site.key)
   + default is empty, only checked if your WS_URL is starts with https://
@@ -33,7 +33,7 @@ Try `ws -help` for a list of command line options.
 ### Command line options
 
 + -url overrides WS_URL
-+ -htdocs overrides WS_HTDOCS
++ -docs overrides WS_DOCROOT
 + -ssl-key overrides WS_SSL_KEY
 + -ssl-pem overrides WS_SSL_PEM
 + -init triggers the initialization process and creates a setup.bash file
