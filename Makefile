@@ -3,6 +3,10 @@
 #
 PROJECT = ws
 
+VERSION = $(shell grep 'Version = ' $(PROJECT).go | cut -d \" -f 2)
+
+BRANCH = $(shell git branch | grep '* ' | cut -d\  -f 2)
+
 build: ws.go cmds/ws/ws.go
 	env CGO_ENABLE=0 go build -o bin/ws cmds/ws/ws.go
 
@@ -18,7 +22,7 @@ install: bin/ws ws.go
 clean: 
 	if [ -d bin ]; then /bin/rm -fR bin; fi
 	if [ -d dist ]; then /bin/rm -fR dist; fi
-	if [ -f $(PROJECT)-release.zip ]; then /bin/rm $(PROJECT)-release.zip; fi
+	if [ -f $(PROJECT)-$(VERSION)-release.zip ]; then /bin/rm $(PROJECT)-$(VERSION)-release.zip; fi
 
 test:
 	go test
@@ -29,7 +33,7 @@ website:
 save:
 	./mk-website.bash
 	git commit -am "Quick save"
-	git push origin master
+	git push origin $(BRANCH)
 
 publish:
 	./mk-website.bash
